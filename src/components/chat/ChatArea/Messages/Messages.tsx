@@ -1,19 +1,13 @@
 import type { ChatMessage } from '@/types/os'
 
-import { AgentMessage, UserMessage } from './MessageItem'
-import Tooltip from '@/components/ui/tooltip'
-import { memo } from 'react'
-import {
-  ToolCallProps,
-  ReasoningStepProps,
-  ReasoningProps,
-  ReferenceData,
-  Reference
-} from '@/types/os'
+import { ReasoningStepProps, ReasoningProps, ReferenceData, Reference } from '@/types/os'
 import React, { type FC } from 'react'
 
 import Icon from '@/components/ui/icon'
 import ChatBlankState from './ChatBlankState'
+import FrontendToolCall from './FrontendToolCall'
+import { AgentMessage, UserMessage } from './MessageItem'
+import Tooltip from '@/components/ui/tooltip'
 
 interface MessageListProps {
   messages: ChatMessage[]
@@ -108,14 +102,14 @@ const AgentMessageWrapper = ({ message }: MessageWrapperProps) => {
             />
           </Tooltip>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex w-full flex-col gap-3">
             {message.tool_calls.map((toolCall, index) => (
-              <ToolComponent
+              <FrontendToolCall
                 key={
                   toolCall.tool_call_id ||
                   `${toolCall.tool_name}-${toolCall.created_at}-${index}`
                 }
-                tools={toolCall}
+                toolCall={toolCall}
               />
             ))}
           </div>
@@ -144,13 +138,6 @@ const Reasonings: FC<ReasoningProps> = ({ reasoning }) => (
     ))}
   </div>
 )
-
-const ToolComponent = memo(({ tools }: ToolCallProps) => (
-  <div className="cursor-default rounded-full bg-accent px-2 py-1.5 text-xs">
-    <p className="font-dmmono uppercase text-primary/80">{tools.tool_name}</p>
-  </div>
-))
-ToolComponent.displayName = 'ToolComponent'
 const Messages = ({ messages }: MessageListProps) => {
   if (messages.length === 0) {
     return <ChatBlankState />
